@@ -23,7 +23,7 @@ public class UserTest {
     @Test
     void testDefaultConstructorAndGetters() {
         User newUser = new User();
-        assertTrue(newUser.getIsActive()); // Default value
+        assertTrue(newUser.getIsActive());
         assertNull(newUser.getId());
     }
 
@@ -47,7 +47,6 @@ public class UserTest {
         User user2 = new User();
         user2.setId(5L);
 
-        // Same ID means equal
         assertEquals(user1, user2);
         assertEquals(user1.hashCode(), user2.hashCode());
     }
@@ -59,7 +58,6 @@ public class UserTest {
         User user2 = new User();
         user2.setId(6L);
 
-        // Different ID means not equal
         assertNotEquals(user1, user2);
         assertNotEquals(user1.hashCode(), user2.hashCode());
     }

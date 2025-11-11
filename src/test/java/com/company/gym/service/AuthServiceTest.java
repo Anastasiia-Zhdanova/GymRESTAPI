@@ -69,9 +69,9 @@ public class AuthServiceTest {
              MockedStatic<PasswordUtil> mockPasswordUtil = Mockito.mockStatic(PasswordUtil.class)) {
 
             mockUsernameUtil.when(() -> UsernameUtil.generateBaseUsername("John", "Doe")).thenReturn("john.doe");
-            when(userDAO.findByUsername("john.doe")).thenReturn(existingUser); // Collision 1
-            when(userDAO.findByUsername("john.doe1")).thenReturn(existingUser); // Collision 2
-            when(userDAO.findByUsername("john.doe2")).thenReturn(null); // Success
+            when(userDAO.findByUsername("john.doe")).thenReturn(existingUser);
+            when(userDAO.findByUsername("john.doe1")).thenReturn(existingUser);
+            when(userDAO.findByUsername("john.doe2")).thenReturn(null);
 
             mockGenerator.when(UserCredentialGenerator::generatePassword).thenReturn(PLAIN_PASSWORD);
             mockPasswordUtil.when(() -> PasswordUtil.hashPassword(PLAIN_PASSWORD)).thenReturn(HASHED_PASSWORD);

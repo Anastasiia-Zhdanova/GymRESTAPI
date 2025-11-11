@@ -42,7 +42,7 @@ public class TraineeTest {
         assertNotNull(trainee.getTrainings());
 
         Trainee newTrainee = new Trainee();
-        assertNotNull(newTrainee.getTrainers()); // Check default empty set initialization
+        assertNotNull(newTrainee.getTrainers());
     }
 
     @Test
@@ -76,10 +76,10 @@ public class TraineeTest {
     void testRemoveTrainer_FromNullSet() {
         Trainee traineeWithNullSet = new Trainee();
         traineeWithNullSet.setId(1L);
-        traineeWithNullSet.setTrainers(null); // Simulate null set
+        traineeWithNullSet.setTrainers(null);
 
-        traineeWithNullSet.removeTrainer(mockTrainer); // Should not throw exception
-        assertNull(traineeWithNullSet.getTrainers()); // Still null
+        traineeWithNullSet.removeTrainer(mockTrainer);
+        assertNull(traineeWithNullSet.getTrainers());
     }
 
     @Test

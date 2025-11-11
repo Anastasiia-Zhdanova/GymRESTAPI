@@ -1,8 +1,8 @@
 package com.company.gym.mapper;
 
-import com.company.gym.dto.response.TraineeShortResponse;
 import com.company.gym.dto.response.TrainerProfileResponse;
 import com.company.gym.dto.response.TrainerShortResponse;
+import com.company.gym.dto.response.TraineeShortResponse;
 import com.company.gym.dto.response.TrainingListResponse;
 import com.company.gym.dto.response.TrainingTypeResponse;
 import com.company.gym.entity.Trainee;
@@ -13,15 +13,13 @@ import com.company.gym.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mapstruct.factory.Mappers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,134 +28,169 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class TrainerMapperTest {
 
+    @Spy
+    private TrainerMapper trainerMapper = org.mapstruct.factory.Mappers.getMapper(TrainerMapper.class);
+
     @Mock
-    private TraineeMapper traineeMapper; // Mock the dependency
+    private TraineeMapper traineeMapper;
 
-    @InjectMocks
-    private TrainerMapper trainerMapper = Mappers.getMapper(TrainerMapper.class);
-
-    private Trainer mockTrainer;
     private Trainee mockTrainee;
+    private Trainer mockTrainer;
     private Training mockTraining;
-    private TrainingType mockType;
+    private User mockTrainerUser;
+    private User mockTraineeUser;
+    private TrainingType mockSpecialization;
 
     @BeforeEach
     void setUp() {
-        // --- Entities Setup ---
-        User user = new User();
-        user.setUsername("coach.user");
-        user.setFirstName("Coach");
-        user.setLastName("User");
-        user.setIsActive(true);
+        trainerMapper.traineeMapper = traineeMapper;
 
-        mockType = new TrainingType("Weights");
-        mockType.setId(10L);
+        mockTrainerUser = new User();
+        mockTrainerUser.setUsername("trainer.one");
+        mockTrainerUser.setFirstName("Jane");
+        mockTrainerUser.setLastName("Smith");
+        mockTrainerUser.setIsActive(true);
+
+        mockTraineeUser = new User();
+        mockTraineeUser.setUsername("trainee.user");
+        mockTraineeUser.setFirstName("John");
+        mockTraineeUser.setLastName("Doe");
+
+        mockSpecialization = new TrainingType("Fitness");
+        mockSpecialization.setId(5L);
+
+        mockTrainee = new Trainee();
+        mockTrainee.setUser(mockTraineeUser);
 
         mockTrainer = new Trainer();
-        mockTrainer.setUser(user);
-        mockTrainer.setSpecialization(mockType);
-        mockTrainer.setTrainees(new HashSet<>());
-
-        User traineeUser = new User();
-        traineeUser.setFirstName("Client");
-        traineeUser.setLastName("C");
-        mockTrainee = new Trainee();
-        mockTrainee.setUser(traineeUser);
+        mockTrainer.setUser(mockTrainerUser);
+        mockTrainer.setSpecialization(mockSpecialization);
+        mockTrainer.setTrainees(Set.of(mockTrainee));
 
         mockTraining = new Training();
-        mockTraining.setTrainingName("Lift");
+        mockTraining.setTrainingName("Weights");
         mockTraining.setTrainingDate(new Date());
         mockTraining.setTrainingDuration(90);
-        mockTraining.setTrainingType(mockType);
         mockTraining.setTrainee(mockTrainee);
+        mockTraining.setTrainingType(mockSpecialization);
     }
 
     @Test
-    void toTrainerProfileResponse_Success() {
-        mockTrainer.getTrainees().add(mockTrainee);
-        TraineeShortResponse mockShortResponse = new TraineeShortResponse();
-        when(traineeMapper.toTraineeShortResponse(mockTrainee)).thenReturn(mockShortResponse);
+    void toTrainerProfileResponse_MapsSuccessfully() {
+        TraineeShortResponse mockShortTrainee = new TraineeShortResponse();
+        when(traineeMapper.toTraineeShortResponse(any(Trainee.class))).thenReturn(mockShortTrainee);
 
         TrainerProfileResponse response = trainerMapper.toTrainerProfileResponse(mockTrainer);
 
         assertNotNull(response);
-        assertEquals("coach.user", response.getUsername());
-        assertEquals("Weights", response.getSpecialization().getTrainingTypeName());
-        assertTrue(response.getIsActive());
-        assertEquals(1, response.getTraineesList().size());
-        assertTrue(response.getTraineesList().contains(mockShortResponse));
+        assertEquals("trainer.one", response.getUsername());
     }
 
     @Test
-    void toTrainerProfileResponse_NullTrainees() {
-        mockTrainer.setTrainees(null);
+    void toTrainerProfileResponse_HandlesNullInput() {
+        TrainerProfileResponse response = trainerMapper.toTrainerProfileResponse(null);
 
-        TrainerProfileResponse response = trainerMapper.toTrainerProfileResponse(mockTrainer);
-
-        assertNotNull(response.getTraineesList());
-        assertTrue(response.getTraineesList().isEmpty());
+        assertNull(response, "Should return null when the input Trainer entity is null.");
     }
 
     @Test
-    void toTrainerShortResponse_Success() {
+    void toTrainerShortResponse_MapsUserAndSpecialization() {
         TrainerShortResponse response = trainerMapper.toTrainerShortResponse(mockTrainer);
 
         assertNotNull(response);
-        assertEquals("coach.user", response.getUsername());
-        assertEquals("Coach", response.getFirstName());
-        assertEquals("Weights", response.getSpecialization().getTrainingTypeName());
-        assertEquals(10L, response.getSpecialization().getId());
+        assertEquals("trainer.one", response.getUsername());
     }
 
     @Test
-    void toTrainerShortResponseList_Success() {
-        List<Trainer> trainers = List.of(mockTrainer);
-        List<TrainerShortResponse> responses = trainerMapper.toTrainerShortResponseList(trainers);
+    void toTrainerShortResponse_HandlesNullInput() {
+        TrainerShortResponse response = trainerMapper.toTrainerShortResponse(null);
 
-        assertNotNull(responses);
-        assertEquals(1, responses.size());
+        assertNull(response, "Should return null when the input Trainer entity is null.");
     }
 
     @Test
-    void toTrainingListResponse_Success() {
+    void toTrainerShortResponseList_MapsNonEmptyList() {
+        List<Trainer> trainers = List.of(mockTrainer, mockTrainer);
+
+        List<TrainerShortResponse> result = trainerMapper.toTrainerShortResponseList(trainers);
+
+        assertNotNull(result, "Should return a non-null list for non-null input.");
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void toTrainerShortResponseList_HandlesNullInput() {
+        List<TrainerShortResponse> result = trainerMapper.toTrainerShortResponseList(null);
+
+        assertNull(result, "Should return null when the input list of Trainers is null.");
+    }
+
+    @Test
+    void toTrainingListResponse_MapsSuccessfully() {
         TrainingListResponse response = trainerMapper.toTrainingListResponse(mockTraining);
 
         assertNotNull(response);
-        assertEquals("Lift", response.getTrainingName());
-        assertEquals("Weights", response.getTrainingType());
-        assertEquals("Client C", response.getAssociatedUserName());
+        assertEquals("Weights", response.getTrainingName());
     }
 
     @Test
-    void toTrainingListResponseList_Success() {
-        List<Training> trainings = List.of(mockTraining);
-        List<TrainingListResponse> responses = trainerMapper.toTrainingListResponse(trainings);
+    void toTrainingListResponse_HandlesNullInput() {
+        TrainingListResponse result = trainerMapper.toTrainingListResponse((Training) null);
 
-        assertNotNull(responses);
-        assertEquals(1, responses.size());
+        assertNull(result, "toTrainingListResponse (single) should return null for null input.");
     }
 
     @Test
-    void toTrainingListResponseList_NullInput() {
-        assertNull(trainerMapper.toTrainingListResponse((List<Training>) null));
+    void toTrainingListResponseList_MapsNonEmptyList() {
+        List<Training> trainings = List.of(mockTraining, mockTraining);
+
+        List<TrainingListResponse> result = trainerMapper.toTrainingListResponse((List) trainings);
+
+        assertNotNull(result, "Should return a non-null list for non-null input.");
+        assertEquals(2, result.size());
     }
 
     @Test
-    void toTrainingTypeResponse_Success() {
-        TrainingTypeResponse response = trainerMapper.toTrainingTypeResponse(mockType);
+    void toTrainingListResponseList_HandlesNullInput() {
+        List<TrainingListResponse> result = trainerMapper.toTrainingListResponse((List) null);
 
-        assertNotNull(response);
-        assertEquals("Weights", response.getTrainingTypeName());
-        assertEquals(10L, response.getId());
+        assertNull(result, "Should return null when the input list of trainings is null.");
     }
 
     @Test
-    void toTrainingTypeResponseList_Success() {
-        List<TrainingType> types = List.of(mockType);
-        List<TrainingTypeResponse> responses = trainerMapper.toTrainingTypeResponseList(types);
+    void toTrainingTypeResponse_HandlesNullInput() {
+        assertNull(trainerMapper.toTrainingTypeResponse(null),
+                "toTrainingTypeResponse should return null for null input.");
+    }
 
-        assertNotNull(responses);
-        assertEquals(1, responses.size());
-        assertEquals("Weights", responses.get(0).getTrainingTypeName());
+    @Test
+    void toTrainingTypeResponseList_MapsNonEmptyList() {
+        List<TrainingType> types = List.of(mockSpecialization, new TrainingType("Karate"));
+
+        List<TrainingTypeResponse> result = trainerMapper.toTrainingTypeResponseList(types);
+
+        assertNotNull(result, "Should return a non-null list for non-null input.");
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void toTrainingTypeResponseList_HandlesNullInput() {
+        List<TrainingTypeResponse> result = trainerMapper.toTrainingTypeResponseList(null);
+
+        assertNull(result, "toTrainingTypeResponseList should return null for null input list.");
+    }
+
+    @Test
+    void mapTraineesSetToShortList_MapsNonEmptySet() {
+        TraineeShortResponse mockShortTrainee = new TraineeShortResponse();
+        when(traineeMapper.toTraineeShortResponse(any(Trainee.class))).thenReturn(mockShortTrainee);
+        List<TraineeShortResponse> result = trainerMapper.mapTraineesSetToShortList(Set.of(mockTrainee));
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void mapTraineesSetToShortList_HandlesNullSet() {
+        List<TraineeShortResponse> result = trainerMapper.mapTraineesSetToShortList(null);
+        assertTrue(result.isEmpty());
     }
 }

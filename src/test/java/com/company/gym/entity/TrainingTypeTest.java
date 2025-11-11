@@ -36,7 +36,7 @@ public class TrainingTypeTest {
     void testEqualsAndHashCode_SameId() {
         TrainingType type1 = new TrainingType("Running");
         type1.setId(2L);
-        TrainingType type2 = new TrainingType("Pilates"); // Different name should not matter
+        TrainingType type2 = new TrainingType("Pilates");
         type2.setId(2L);
 
         assertEquals(type1, type2);

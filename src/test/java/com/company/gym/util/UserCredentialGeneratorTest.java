@@ -2,7 +2,6 @@ package com.company.gym.util;
 
 import org.junit.jupiter.api.Test;
 import java.lang.reflect.Constructor;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 

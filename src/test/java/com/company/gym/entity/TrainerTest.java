@@ -74,10 +74,10 @@ public class TrainerTest {
     void testRemoveTrainee_FromNullSet() {
         Trainer trainerWithNullSet = new Trainer();
         trainerWithNullSet.setId(1L);
-        trainerWithNullSet.setTrainees(null); // Simulate null set
+        trainerWithNullSet.setTrainees(null);
 
-        trainerWithNullSet.removeTrainee(mockTrainee); // Should not throw exception
-        assertNull(trainerWithNullSet.getTrainees()); // Still null
+        trainerWithNullSet.removeTrainee(mockTrainee);
+        assertNull(trainerWithNullSet.getTrainees());
     }
 
     @Test

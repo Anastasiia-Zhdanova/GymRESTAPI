@@ -1,8 +1,18 @@
 package com.company.gym;
 
+import com.company.gym.config.*;
+import com.company.gym.controller.AuthenticationControllerTest;
+import com.company.gym.controller.TraineeControllerTest;
+import com.company.gym.controller.TrainerControllerTest;
+import com.company.gym.controller.TrainingControllerTest;
 import com.company.gym.dao.*;
+import com.company.gym.dto.request.LoginRequestTest;
+import com.company.gym.dto.request.TrainingRequestTest;
+import com.company.gym.dto.response.TrainingTypeResponseTest;
+import com.company.gym.dto.response.UserCredentialsResponseTest;
 import com.company.gym.entity.*;
 import com.company.gym.exception.AuthenticationExceptionTest;
+import com.company.gym.exception.GlobalExceptionHandlerTest;
 import com.company.gym.exception.NotFoundExceptionTest;
 import com.company.gym.exception.ValidationExceptionTest;
 import com.company.gym.mapper.TraineeMapperTest;
@@ -14,46 +24,46 @@ import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectClasses({
-        //dao
         GenericDAOTest.class,
         TraineeDAOTest.class,
         TrainerDAOTest.class,
         TrainingDAOTest.class,
         TrainingTypeDAOTest.class,
         UserDAOTest.class,
-        //service
         AuthServiceTest.class,
-        //TraineeServiceTest.class,
-        //TrainerServiceTest.class,
-        //TrainingServiceTest.class,
+        TraineeServiceTest.class,
+        TrainerServiceTest.class,
+        TrainingServiceTest.class,
         TrainingTypeServiceTest.class,
-        //TraineeServiceFacadeTest.class,
+        TraineeServiceFacadeTest.class,
         TrainerServiceFacadeTest.class,
-        //entity
         TraineeTest.class,
         TrainerTest.class,
         TrainingTest.class,
         TrainingTypeTest.class,
         UserTest.class,
-        //mapper
         TraineeMapperTest.class,
         TrainerMapperTest.class,
-        //util
         HibernateUtilTest.class,
         PasswordUtilTest.class,
         QueryUtilTest.class,
         UserCredentialGeneratorTest.class,
-        //UsernameUtilTest.class,
-        //exception
+        UsernameUtilTest.class,
         AuthenticationExceptionTest.class,
-       // GlobalExceptionHandlerTest.class,
+        GlobalExceptionHandlerTest.class,
         NotFoundExceptionTest.class,
         ValidationExceptionTest.class,
-        //controller
-        //AuthenticationControllerTest.class,
-        //TraineeControllerTest.class,
-       // TrainerControllerTest.class,
-        //TrainingControllerTest.class
+        AuthenticationControllerTest.class,
+        TraineeControllerTest.class,
+        TrainerControllerTest.class,
+        TrainingControllerTest.class,
+        LoginRequestTest.class,
+        TrainingRequestTest.class,
+        TrainingTypeResponseTest.class,
+        UserCredentialsResponseTest.class,
+        WebSecurityConfigTest.class,
+        CustomUsernamePasswordAuthenticationFilterTest.class,
+        LoggingAspectTest.class
 })
 public class AllTestsRun {
 
